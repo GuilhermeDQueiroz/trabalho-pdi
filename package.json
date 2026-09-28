@@ -4,7 +4,7 @@
     "name": "Gualter Albino / João Vitor Teixeira"
   },
   "engines": {
-    "node": ">=22.1.0"
+    "node": ">=20.0.0"
   },
   "version": "1.4.0",
   "private": false,

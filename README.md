@@ -161,3 +161,19 @@ Ran 14 tests in 0.050s
 
 OK
 ```
+
+---
+
+## 🌐 Deploy na Vercel (Produção em Nuvem)
+
+O projeto está totalmente preparado e configurado para deploy automático na **Vercel** com arquitetura híbrida (Frontend estático na CDN + Backend Python Serverless):
+
+1. Acesse o [Vercel Dashboard](https://vercel.com/dashboard) e clique em **"Add New..." > "Project"**.
+2. Conecte sua conta do GitHub e importe o repositório **`trabalho-pdi`**.
+3. A Vercel detectará automaticamente as configurações através do arquivo [`vercel.json`](vercel.json):
+   - **Framework Preset:** Vite
+   - **Root Directory:** `./`
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. Clique em **"Deploy"**. A Vercel provisionará a interface web e as funções Python Serverless em [`api/index.py`](api/index.py) automaticamente.
+
