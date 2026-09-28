@@ -480,6 +480,7 @@ function exibirMensagem(pTitulo: string = 'Erro', pErro: string | any) {
   useLayoutStore().messageDialog.show = true
   useLayoutStore().messageDialog.titulo = pTitulo
   useLayoutStore().messageDialog.mensagem = pErro instanceof Error ? pErro.message : String(pErro)
+  useLayoutStore().messageDialog.tipo = pTitulo.toLowerCase().includes('aviso') ? 'alert' : 'error'
 }
 </script>
 
