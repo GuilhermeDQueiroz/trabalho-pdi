@@ -21,6 +21,10 @@ $ProjetoCache/
 .cache/
 *.local
 
+# AI Agents & Internal Documentation
+.agents/
+docs/
+
 # Editor & OS files
 .DS_Store
 Thumbs.db
