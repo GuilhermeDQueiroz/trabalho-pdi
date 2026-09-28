@@ -20,6 +20,64 @@
         </div>
 
         <div class="d-flex align-center">
+          <!-- Botão / Tooltip Informativo dos Filtros Aplicados -->
+          <v-menu
+            v-if="props.filtrosAplicados && props.filtrosAplicados.length > 0"
+            location="bottom end"
+            :close-on-content-click="false"
+            max-width="480"
+          >
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                variant="tonal"
+                size="small"
+                class="LStyleAppliedFiltersBtn mr-2"
+                v-tooltip="'Ver detalhes de como os filtros foram aplicados nesta imagem'"
+              >
+                <v-icon size="16" class="mr-1.5" color="#ffffff">mdi-layers-outline</v-icon>
+                <span>{{ props.filtrosAplicados.length }} {{ props.filtrosAplicados.length === 1 ? 'Filtro Aplicado' : 'Filtros Aplicados' }}</span>
+                <v-icon size="14" class="ml-1" color="#a1a1aa">mdi-information-outline</v-icon>
+              </v-btn>
+            </template>
+
+            <v-card class="LStyleAppliedFiltersPopover pa-4" elevation="12">
+              <div class="d-flex align-center justify-space-between mb-3 border-b pb-2" style="border-color: #27272e !important">
+                <div class="d-flex align-center ga-2">
+                  <v-icon color="#ffffff" size="18">mdi-tune-vertical-variant</v-icon>
+                  <span class="text-subtitle-2 font-weight-bold" style="color: #ffffff">Filtros Aplicados na Imagem</span>
+                </div>
+                <span class="LStylePipelineCountBadge">{{ props.filtrosAplicados.length }} na sequência</span>
+              </div>
+
+              <div class="LStyleAppliedFiltersList">
+                <div
+                  v-for="(filtro, idx) in props.filtrosAplicados"
+                  :key="idx"
+                  class="LStyleAppliedFilterItem mb-3"
+                >
+                  <div class="d-flex align-center justify-space-between mb-1.5 flex-wrap ga-2">
+                    <div class="d-flex align-center ga-1.5">
+                      <span class="LStyleStepNumberBadge">#{{ idx + 1 }}</span>
+                      <strong class="text-caption font-weight-bold" style="color: #ffffff">{{ obterInfoFiltro(filtro.tipo).titulo }}</strong>
+                      <span class="LStyleCategoryChip">{{ obterInfoFiltro(filtro.tipo).categoria }}</span>
+                    </div>
+                    <code class="LStyleMiniFormula">{{ obterInfoFiltro(filtro.tipo).formula }}</code>
+                  </div>
+
+                  <div class="LStyleAppliedFilterDetails pa-2.5">
+                    <p class="mb-1 text-caption" style="color: #e4e4e7">
+                      <strong style="color: #a1a1aa">O que aplicou:</strong> {{ obterInfoFiltro(filtro.tipo).oQueAplica }}
+                    </p>
+                    <p class="mb-0 text-caption" style="color: #a1a1aa">
+                      <strong style="color: #71717a">Como aplicou (Matemática):</strong> {{ obterInfoFiltro(filtro.tipo).comoAplica }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </v-card>
+          </v-menu>
+
           <!-- Botão de Alternância Direta: Imagem <-> Histograma -->
           <v-btn
             variant="tonal"
@@ -141,18 +199,29 @@ import GraficoDeBarras from '@/components/GraficoDeBarras.vue'
 // Service Python
 import { PythonPdiService } from '@/services/PythonPdiService'
 
+// Explicação dos Filtros
+import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
+
+export interface IItemFiltroAplicado {
+  tipo: number
+  titulo: string
+  params?: any
+}
+
 interface PropTypes {
   titulo?: string
   maxWidhtCard?: string
   colunasCard?: number
   imagemMatriz?: number[][]
+  filtrosAplicados?: IItemFiltroAplicado[]
 }
 
 const props = withDefaults(defineProps<PropTypes>(), {
   titulo: 'Painel de Imagem',
   colunasCard: 12,
   maxWidhtCard: '100%',
-  imagemMatriz: () => []
+  imagemMatriz: () => [],
+  filtrosAplicados: () => []
 })
 
 const imagem = defineModel<string | null>('imagem', {
@@ -530,5 +599,81 @@ function onMouseLeave() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.LStyleAppliedFiltersBtn {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: var(--radius-sm) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.2s ease !important;
+}
+
+.LStyleAppliedFiltersBtn:hover {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.LStyleAppliedFiltersPopover {
+  background-color: #151519 !important;
+  border: 1px solid #2f2f38 !important;
+  border-radius: var(--radius-md) !important;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.LStylePipelineCountBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  background-color: #24242c;
+  border: 1px solid #363642;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.LStyleAppliedFilterItem {
+  background-color: #1a1a20;
+  border: 1px solid #282832;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.LStyleStepNumberBadge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #000000;
+  background-color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.LStyleCategoryChip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  background-color: #24242e;
+  border: 1px solid #383844;
+  padding: 1px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.LStyleMiniFormula {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.74rem;
+  color: #ffffff;
+  background-color: #0d0d10;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #22222a;
+}
+
+.LStyleAppliedFilterDetails {
+  background-color: #121216;
+  border-top: 1px solid #24242c;
 }
 </style>

@@ -9,17 +9,71 @@
         <h4 class="LStyleItemTitle">{{ props.titulo }}</h4>
       </div>
 
-      <v-btn
-        size="small"
-        variant="tonal"
-        color="error"
-        class="LStyleDeleteBtn"
-        v-tooltip="'Excluir este filtro da fila'"
-        @click.stop="onDeleteItem(props.index)"
-      >
-        <v-icon size="16" class="mr-1">mdi-trash-can-outline</v-icon>
-        <span>Excluir</span>
-      </v-btn>
+      <div class="d-flex align-center ga-2">
+        <!-- Popover / Tooltip com explicação de o que aplica e como aplica -->
+        <v-menu
+          location="bottom end"
+          :close-on-content-click="false"
+          max-width="450"
+        >
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              size="small"
+              variant="tonal"
+              class="LStyleInfoBadgeBtn"
+              v-tooltip="'Ver detalhes teóricos e matemáticos deste filtro'"
+            >
+              <v-icon size="15" class="mr-1" color="#a1a1aa">mdi-information-outline</v-icon>
+              <span>Como funciona</span>
+            </v-btn>
+          </template>
+
+          <v-card class="LStyleFilterInfoCard pa-4" elevation="12">
+            <div class="d-flex align-center justify-space-between mb-2">
+              <div class="d-flex align-center ga-1.5">
+                <v-icon size="18" color="#ffffff">mdi-function-variant</v-icon>
+                <span class="text-subtitle-2 font-weight-bold" style="color: #ffffff">{{ infoFiltro.titulo }}</span>
+              </div>
+              <span class="LStyleCategoryBadge">{{ infoFiltro.categoria }}</span>
+            </div>
+
+            <div class="LStyleFormulaBox mb-3">
+              <code>{{ infoFiltro.formula }}</code>
+            </div>
+
+            <div class="mb-2">
+              <div class="text-caption font-weight-bold mb-1" style="color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em">
+                O que aplica na imagem:
+              </div>
+              <p class="text-caption mb-0" style="color: #e4e4e7; line-height: 1.45">
+                {{ infoFiltro.oQueAplica }}
+              </p>
+            </div>
+
+            <div>
+              <div class="text-caption font-weight-bold mb-1" style="color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em">
+                Como aplica (Matemática):
+              </div>
+              <p class="text-caption mb-0" style="color: #a1a1aa; line-height: 1.45">
+                {{ infoFiltro.comoAplica }}
+              </p>
+            </div>
+          </v-card>
+        </v-menu>
+
+        <v-btn
+          size="small"
+          variant="tonal"
+          color="error"
+          class="LStyleDeleteBtn"
+          v-tooltip="'Excluir este filtro da fila'"
+          @click.stop="onDeleteItem(props.index)"
+        >
+          <v-icon size="16" class="mr-1">mdi-trash-can-outline</v-icon>
+          <span>Excluir</span>
+        </v-btn>
+      </div>
     </div>
 
     <!-- Inputs reativos para os parâmetros -->
@@ -65,6 +119,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
 
 const emit = defineEmits(['onDelete'])
 
@@ -72,7 +127,12 @@ const props = defineProps({
   titulo: { type: String, required: true },
   subtitulo: { type: String, required: false },
   ordem: { type: Number, required: true },
-  index: { type: Number, required: true }
+  index: { type: Number, required: true },
+  tipo: { type: Number, required: false, default: 0 }
+})
+
+const infoFiltro = computed(() => {
+  return obterInfoFiltro(props.tipo)
 })
 
 const params = defineModel<any>('params', {
@@ -186,6 +246,57 @@ function onImageParametroChange(pIndex: string, pEvent: Event) {
   font-size: 0.88rem;
   font-weight: 600;
   color: #ffffff;
+}
+
+.LStyleInfoBadgeBtn {
+  font-size: 0.74rem !important;
+  color: #a1a1aa !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: var(--radius-xs) !important;
+  height: 28px !important;
+  padding: 0 8px !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.2s ease !important;
+}
+
+.LStyleInfoBadgeBtn:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.LStyleFilterInfoCard {
+  background-color: #16161a !important;
+  border: 1px solid #33333d !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.LStyleCategoryBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  background-color: #27272f;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #3f3f4e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.LStyleFormulaBox {
+  background-color: #0d0d10;
+  border: 1px solid #26262e;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+.LStyleFormulaBox code {
+  color: #ffffff;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .LStyleDeleteBtn {

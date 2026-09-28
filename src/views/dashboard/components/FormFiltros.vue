@@ -101,6 +101,26 @@
             </v-btn>
           </v-col>
         </v-row>
+
+        <!-- Painel Informativo Dinâmico do Filtro Selecionado -->
+        <transition name="fade">
+          <div v-if="filtroSelecionadoInfo" class="LStyleFilterExplainerBox mt-3 pa-3">
+            <div class="d-flex align-center justify-space-between mb-1.5 flex-wrap ga-2">
+              <div class="d-flex align-center ga-1.5">
+                <v-icon size="16" color="#ffffff">mdi-information-outline</v-icon>
+                <strong class="text-caption font-weight-bold" style="color: #ffffff">{{ filtroSelecionadoInfo.titulo }}</strong>
+                <span class="LStyleCategoryChip">{{ filtroSelecionadoInfo.categoria }}</span>
+              </div>
+              <code class="LStyleFormulaSnippet">{{ filtroSelecionadoInfo.formula }}</code>
+            </div>
+            <p class="text-caption mb-1" style="color: #e4e4e7">
+              <strong style="color: #a1a1aa">O que aplica na imagem:</strong> {{ filtroSelecionadoInfo.oQueAplica }}
+            </p>
+            <p class="text-caption mb-0" style="color: #a1a1aa">
+              <strong style="color: #71717a">Como aplica (Matemática):</strong> {{ filtroSelecionadoInfo.comoAplica }}
+            </p>
+          </div>
+        </transition>
       </div>
 
       <!-- Indicador Visual do Fluxo do Pipeline (4 Passos) -->
@@ -144,6 +164,7 @@
                   <InputGenerico
                     :index="index"
                     :ordem="index + 1"
+                    :tipo="filtro.tipo"
                     :titulo="filtro.titulo"
                     v-model:params="filtro.params"
                     :subtitulo="filtro.subtitulo"
@@ -229,9 +250,17 @@ import { PythonPdiService } from '@/services/PythonPdiService'
 // Components
 import InputGenerico from './InputGenerico.vue'
 
+// Utilitários de Explicação de Filtros
+import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
+
 // Propriedades reativas
 const ordem = ref<number>(0)
 const filtros = ref<IFiltroFormFiltro[]>([])
+
+const filtroSelecionadoInfo = computed(() => {
+  if (!filtroSelecionado.value || !filtroSelecionado.value.valor) return null
+  return obterInfoFiltro(filtroSelecionado.value.valor)
+})
 
 watch(
   () => filtros.value.length,
@@ -399,7 +428,8 @@ async function onAplicarFiltros() {
         emit('onImagemAtualizada', {
           matriz: props.imagemEntrada,
           base64: props.imagemEntradaBase64,
-          restauradoOriginal: true
+          restauradoOriginal: true,
+          filtrosAplicados: []
         })
       }
       exibirDialog.value = false
@@ -431,7 +461,12 @@ async function onAplicarFiltros() {
     emit('onImagemAtualizada', {
       matriz: resposta.matriz,
       base64: resposta.imagem_base64,
-      histograma: resposta.histograma
+      histograma: resposta.histograma,
+      filtrosAplicados: filtrosOrdenados.map((f) => ({
+        tipo: f.tipo,
+        titulo: f.titulo,
+        params: f.params
+      }))
     })
   } catch (error) {
     console.error('Erro na execução do backend Python:', error)
@@ -708,5 +743,34 @@ function exibirMensagem(pTitulo: string = 'Erro', pErro: string | any) {
   color: #71717a !important;
   border: 1px solid #323238 !important;
   box-shadow: none !important;
+}
+
+.LStyleFilterExplainerBox {
+  background-color: #121216;
+  border: 1px solid #2f2f38;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease;
+}
+
+.LStyleCategoryChip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #a1a1aa;
+  background-color: #202027;
+  border: 1px solid #383842;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.LStyleFormulaSnippet {
+  background-color: #0b0b0e;
+  border: 1px solid #24242c;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-family: 'Fira Code', monospace;
 }
 </style>

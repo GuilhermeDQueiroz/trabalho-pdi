@@ -56,6 +56,7 @@
           :titulo="'Imagem Resultante'"
           v-model:imagem="imagemResultadoBase64"
           :imagemMatriz="imagemResultadoMatriz"
+          :filtrosAplicados="filtrosAplicados"
         >
           <template #actions>
             <v-btn
@@ -118,6 +119,7 @@ import GaleriaAmostras, { type IPayloadAmostra } from './components/GaleriaAmost
 // Service Python
 import { PythonPdiService } from '@/services/PythonPdiService'
 import { base64ToMatriz, matrizToBase64 } from '@/utils/imageUtils'
+import { ETipoFiltroPDI } from '@/enums/ETipoFiltroPDI'
 
 // Propriedades reativas
 const inputFile = ref<any>(null)
@@ -126,6 +128,7 @@ const showCardImagens = ref<boolean>(true)
 const exibirFiltros = ref<boolean>(false)
 const exibirGaleria = ref<boolean>(false)
 const filtrosCount = ref<number>(0)
+const filtrosAplicados = ref<Array<{ tipo: number; titulo: string; params?: any }>>([])
 
 const imagemEntradaMatriz = ref<number[][]>([])
 const imagemResultadoMatriz = ref<number[][]>([])
@@ -193,6 +196,7 @@ function onClearImagem() {
   imagemResultadoMatriz.value = []
   amostraAtiva.value = null
   inputFile.value = null
+  filtrosAplicados.value = []
 }
 
 function onAmostraSelecionada(payload: IPayloadAmostra) {
@@ -202,6 +206,7 @@ function onAmostraSelecionada(payload: IPayloadAmostra) {
   imagemResultadoMatriz.value = payload.matriz
   inputFile.value = payload.file
   amostraAtiva.value = payload.nome
+  filtrosAplicados.value = []
 
   showCardImagens.value = false
   setTimeout(() => {
@@ -219,6 +224,7 @@ async function onImagemAtualizada(dados: any) {
     if (dados.matriz && dados.base64) {
       imagemResultadoMatriz.value = dados.matriz
       imagemResultadoBase64.value = dados.base64
+      filtrosAplicados.value = dados.filtrosAplicados || []
     } else if (Array.isArray(dados)) {
       imagemResultadoMatriz.value = dados
       imagemResultadoBase64.value = await matrizToBase64(imagemResultadoMatriz.value)
@@ -241,6 +247,10 @@ async function onClickRotacao180() {
     const res = await PythonPdiService.rotacionar(imagemResultadoMatriz.value, '180')
     imagemResultadoMatriz.value = res.matriz
     imagemResultadoBase64.value = res.imagem_base64
+    filtrosAplicados.value.push({
+      tipo: ETipoFiltroPDI.ROTACAO_180_GRAUS,
+      titulo: 'Rotação 180°'
+    })
   } catch (error) {
     exibirMensagem('Erro ao rotacionar imagem no Python', error)
   } finally {
@@ -261,6 +271,10 @@ async function onClickRotacao90Horario() {
     const res = await PythonPdiService.rotacionar(imagemResultadoMatriz.value, '90_horario')
     imagemResultadoMatriz.value = res.matriz
     imagemResultadoBase64.value = res.imagem_base64
+    filtrosAplicados.value.push({
+      tipo: ETipoFiltroPDI.ROTACAO_90_GRAUS_HORARIO,
+      titulo: 'Rotação 90° Horário'
+    })
   } catch (error) {
     exibirMensagem('Erro ao rotacionar imagem no Python', error)
   } finally {
@@ -281,6 +295,10 @@ async function onClickRotacao90AntiHorario() {
     const res = await PythonPdiService.rotacionar(imagemResultadoMatriz.value, '90_antihorario')
     imagemResultadoMatriz.value = res.matriz
     imagemResultadoBase64.value = res.imagem_base64
+    filtrosAplicados.value.push({
+      tipo: ETipoFiltroPDI.ROTACAO_90_GRAUS_ANTIHORARIO,
+      titulo: 'Rotação 90° Anti-Horário'
+    })
   } catch (error) {
     exibirMensagem('Erro ao rotacionar imagem no Python', error)
   } finally {
