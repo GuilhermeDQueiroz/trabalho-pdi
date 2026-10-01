@@ -102,25 +102,6 @@
           </v-col>
         </v-row>
 
-        <!-- Painel Informativo Dinâmico do Filtro Selecionado -->
-        <transition name="fade">
-          <div v-if="filtroSelecionadoInfo" class="LStyleFilterExplainerBox mt-3 pa-3">
-            <div class="d-flex align-center justify-space-between mb-1.5 flex-wrap ga-2">
-              <div class="d-flex align-center ga-1.5">
-                <v-icon size="16" color="#ffffff">mdi-information-outline</v-icon>
-                <strong class="text-caption font-weight-bold" style="color: #ffffff">{{ filtroSelecionadoInfo.titulo }}</strong>
-                <span class="LStyleCategoryChip">{{ filtroSelecionadoInfo.categoria }}</span>
-              </div>
-              <code class="LStyleFormulaSnippet">{{ filtroSelecionadoInfo.formula }}</code>
-            </div>
-            <p class="text-caption mb-1" style="color: #e4e4e7">
-              <strong style="color: #a1a1aa">O que aplica na imagem:</strong> {{ filtroSelecionadoInfo.oQueAplica }}
-            </p>
-            <p class="text-caption mb-0" style="color: #a1a1aa">
-              <strong style="color: #71717a">Como aplica (Matemática):</strong> {{ filtroSelecionadoInfo.comoAplica }}
-            </p>
-          </div>
-        </transition>
       </div>
 
       <!-- Indicador Visual do Fluxo do Pipeline (4 Passos) -->
@@ -250,17 +231,9 @@ import { PythonPdiService } from '@/services/PythonPdiService'
 // Components
 import InputGenerico from './InputGenerico.vue'
 
-// Utilitários de Explicação de Filtros
-import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
-
 // Propriedades reativas
 const ordem = ref<number>(0)
 const filtros = ref<IFiltroFormFiltro[]>([])
-
-const filtroSelecionadoInfo = computed(() => {
-  if (!filtroSelecionado.value || !filtroSelecionado.value.valor) return null
-  return obterInfoFiltro(filtroSelecionado.value.valor)
-})
 
 watch(
   () => filtros.value.length,

@@ -10,58 +10,6 @@
       </div>
 
       <div class="d-flex align-center ga-2">
-        <!-- Popover / Tooltip com explicação de o que aplica e como aplica -->
-        <v-menu
-          location="bottom end"
-          :close-on-content-click="false"
-          max-width="450"
-        >
-          <template #activator="{ props: menuProps }">
-            <v-btn
-              v-bind="menuProps"
-              size="small"
-              variant="tonal"
-              class="LStyleInfoBadgeBtn"
-              v-tooltip="'Ver detalhes teóricos e matemáticos deste filtro'"
-            >
-              <v-icon size="15" class="mr-1" color="#a1a1aa">mdi-information-outline</v-icon>
-              <span>Como funciona</span>
-            </v-btn>
-          </template>
-
-          <v-card class="LStyleFilterInfoCard pa-4" elevation="12">
-            <div class="d-flex align-center justify-space-between mb-2">
-              <div class="d-flex align-center ga-1.5">
-                <v-icon size="18" color="#ffffff">mdi-function-variant</v-icon>
-                <span class="text-subtitle-2 font-weight-bold" style="color: #ffffff">{{ infoFiltro.titulo }}</span>
-              </div>
-              <span class="LStyleCategoryBadge">{{ infoFiltro.categoria }}</span>
-            </div>
-
-            <div class="LStyleFormulaBox mb-3">
-              <code>{{ infoFiltro.formula }}</code>
-            </div>
-
-            <div class="mb-2">
-              <div class="text-caption font-weight-bold mb-1" style="color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em">
-                O que aplica na imagem:
-              </div>
-              <p class="text-caption mb-0" style="color: #e4e4e7; line-height: 1.45">
-                {{ infoFiltro.oQueAplica }}
-              </p>
-            </div>
-
-            <div>
-              <div class="text-caption font-weight-bold mb-1" style="color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em">
-                Como aplica (Matemática):
-              </div>
-              <p class="text-caption mb-0" style="color: #a1a1aa; line-height: 1.45">
-                {{ infoFiltro.comoAplica }}
-              </p>
-            </div>
-          </v-card>
-        </v-menu>
-
         <v-btn
           size="small"
           variant="tonal"
@@ -119,7 +67,6 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
 
 const emit = defineEmits(['onDelete'])
 
@@ -127,12 +74,7 @@ const props = defineProps({
   titulo: { type: String, required: true },
   subtitulo: { type: String, required: false },
   ordem: { type: Number, required: true },
-  index: { type: Number, required: true },
-  tipo: { type: Number, required: false, default: 0 }
-})
-
-const infoFiltro = computed(() => {
-  return obterInfoFiltro(props.tipo)
+  index: { type: Number, required: true }
 })
 
 const params = defineModel<any>('params', {

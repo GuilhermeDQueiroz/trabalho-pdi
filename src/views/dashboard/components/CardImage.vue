@@ -20,63 +20,13 @@
         </div>
 
         <div class="d-flex align-center">
-          <!-- Botão / Tooltip Informativo dos Filtros Aplicados -->
-          <v-menu
+          <div
             v-if="props.filtrosAplicados && props.filtrosAplicados.length > 0"
-            location="bottom end"
-            :close-on-content-click="false"
-            max-width="480"
+            class="LStyleAppliedFiltersBadge mr-2"
           >
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                variant="tonal"
-                size="small"
-                class="LStyleAppliedFiltersBtn mr-2"
-                v-tooltip="'Ver detalhes de como os filtros foram aplicados nesta imagem'"
-              >
-                <v-icon size="16" class="mr-1.5" color="#ffffff">mdi-layers-outline</v-icon>
-                <span>{{ props.filtrosAplicados.length }} {{ props.filtrosAplicados.length === 1 ? 'Filtro Aplicado' : 'Filtros Aplicados' }}</span>
-                <v-icon size="14" class="ml-1" color="#a1a1aa">mdi-information-outline</v-icon>
-              </v-btn>
-            </template>
-
-            <v-card class="LStyleAppliedFiltersPopover pa-4" elevation="12">
-              <div class="d-flex align-center justify-space-between mb-3 border-b pb-2" style="border-color: #27272e !important">
-                <div class="d-flex align-center ga-2">
-                  <v-icon color="#ffffff" size="18">mdi-tune-vertical-variant</v-icon>
-                  <span class="text-subtitle-2 font-weight-bold" style="color: #ffffff">Filtros Aplicados na Imagem</span>
-                </div>
-                <span class="LStylePipelineCountBadge">{{ props.filtrosAplicados.length }} na sequência</span>
-              </div>
-
-              <div class="LStyleAppliedFiltersList">
-                <div
-                  v-for="(filtro, idx) in props.filtrosAplicados"
-                  :key="idx"
-                  class="LStyleAppliedFilterItem mb-3"
-                >
-                  <div class="d-flex align-center justify-space-between mb-1.5 flex-wrap ga-2">
-                    <div class="d-flex align-center ga-1.5">
-                      <span class="LStyleStepNumberBadge">#{{ idx + 1 }}</span>
-                      <strong class="text-caption font-weight-bold" style="color: #ffffff">{{ obterInfoFiltro(filtro.tipo).titulo }}</strong>
-                      <span class="LStyleCategoryChip">{{ obterInfoFiltro(filtro.tipo).categoria }}</span>
-                    </div>
-                    <code class="LStyleMiniFormula">{{ obterInfoFiltro(filtro.tipo).formula }}</code>
-                  </div>
-
-                  <div class="LStyleAppliedFilterDetails pa-2.5">
-                    <p class="mb-1 text-caption" style="color: #e4e4e7">
-                      <strong style="color: #a1a1aa">O que aplicou:</strong> {{ obterInfoFiltro(filtro.tipo).oQueAplica }}
-                    </p>
-                    <p class="mb-0 text-caption" style="color: #a1a1aa">
-                      <strong style="color: #71717a">Como aplicou (Matemática):</strong> {{ obterInfoFiltro(filtro.tipo).comoAplica }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </v-card>
-          </v-menu>
+            <v-icon size="16" class="mr-1.5" color="#ffffff">mdi-layers-outline</v-icon>
+            <span>{{ props.filtrosAplicados.length }} {{ props.filtrosAplicados.length === 1 ? 'Filtro Aplicado' : 'Filtros Aplicados' }}</span>
+          </div>
 
           <!-- Botão de Alternância Direta: Imagem <-> Histograma -->
           <v-btn
@@ -198,9 +148,6 @@ import GraficoDeBarras from '@/components/GraficoDeBarras.vue'
 
 // Service Python
 import { PythonPdiService } from '@/services/PythonPdiService'
-
-// Explicação dos Filtros
-import { obterInfoFiltro } from '@/utils/pdiInfoFiltros'
 
 export interface IItemFiltroAplicado {
   tipo: number
@@ -601,7 +548,11 @@ function onMouseLeave() {
   opacity: 0;
 }
 
-.LStyleAppliedFiltersBtn {
+.LStyleAppliedFiltersBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
   background-color: rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -609,12 +560,6 @@ function onMouseLeave() {
   text-transform: none !important;
   font-weight: 600 !important;
   letter-spacing: 0.01em !important;
-  transition: all 0.2s ease !important;
-}
-
-.LStyleAppliedFiltersBtn:hover {
-  background-color: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 .LStyleAppliedFiltersPopover {
